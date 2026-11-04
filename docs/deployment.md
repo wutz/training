@@ -38,22 +38,29 @@ kubectl get pods -n training-system
 ### 方式 3: Helm 部署（推荐生产环境）
 
 ```bash
-# 1. 生成 Helm chart（首次）
-make helm
+# 1. 安装已发布的 chart（chart 版本 = 发布版本去掉 v 前缀，如 v0.2.0 → 0.2.0；镜像默认为 ghcr.io/wutz/training:v0.2.0）
+helm install training-operator oci://ghcr.io/wutz/charts/training \
+  --version 0.2.0 \
+  --namespace training-system \
+  --create-namespace
 
-# 2. 安装
+# 2. 升级
+helm upgrade training-operator oci://ghcr.io/wutz/charts/training \
+  --version 0.3.0 \
+  --namespace training-system
+
+# 3. 卸载
+helm uninstall training-operator -n training-system
+```
+
+**从源码安装**（开发用）：修改 `config/` 后用 `kubebuilder edit --plugins=helm/v2-alpha` 重新生成 `dist/chart` 并提交，然后：
+
+```bash
 helm install training-operator ./dist/chart \
   --namespace training-system \
   --create-namespace \
   --set manager.image.repository=ghcr.io/wutz/training \
   --set manager.image.tag=latest
-
-# 3. 升级
-helm upgrade training-operator ./dist/chart \
-  --namespace training-system
-
-# 4. 卸载
-helm uninstall training-operator -n training-system
 ```
 
 ## 配置选项
