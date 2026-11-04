@@ -1,0 +1,48 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - forgeai.wutz.dev
+  resources:
+  - trainingusages
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - forgeai.wutz.dev
+  resources:
+  - trainingusages/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - forgeai.wutz.dev
+  resources:
+  - trainingusages/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - trainer.kubeflow.org
+  resources:
+  - trainjobs
+  verbs:
+  - get
+  - list
+  - watch

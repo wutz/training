@@ -1,0 +1,14 @@
+apiVersion: forgeai.wutz.dev/v1alpha1
+kind: TrainingUsage
+metadata:
+  name: my-job-usage
+  namespace: default
+spec:
+  trainJob: my-job
+  instanceType: rtx-5090.x2
+  workers: 4
+  resources:
+    requests:
+      cpu: "16"
+      memory: 64Gi
+      nvidia.com/gpu: "2"
