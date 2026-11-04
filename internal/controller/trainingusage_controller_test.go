@@ -26,6 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	forgeaiv1alpha1 "github.com/wutz/training/api/v1alpha1"
 )
@@ -35,6 +36,7 @@ var _ = Describe("TrainingUsage Controller", func() {
 		const (
 			resourceName      = "test-resource"
 			resourceNamespace = "default"
+			trainJobName      = "test-trainjob"
 		)
 
 		ctx := context.Background()
@@ -46,6 +48,13 @@ var _ = Describe("TrainingUsage Controller", func() {
 		trainingusage := &forgeaiv1alpha1.TrainingUsage{}
 
 		BeforeEach(func() {
+			By("creating the TrainJob the TrainingUsage tracks")
+			trainJob := &unstructured.Unstructured{}
+			trainJob.SetGroupVersionKind(TrainJobGVK)
+			trainJob.SetName(trainJobName)
+			trainJob.SetNamespace(resourceNamespace)
+			Expect(k8sClient.Create(ctx, trainJob)).To(Succeed())
+
 			By("creating the custom resource for the Kind TrainingUsage")
 			err := k8sClient.Get(ctx, typeNamespacedName, trainingusage)
 			if err != nil && errors.IsNotFound(err) {
@@ -54,7 +63,11 @@ var _ = Describe("TrainingUsage Controller", func() {
 						Name:      resourceName,
 						Namespace: resourceNamespace,
 					},
-					// TODO(user): Specify other spec details if needed.
+					Spec: forgeaiv1alpha1.TrainingUsageSpec{
+						TrainJob:     trainJobName,
+						InstanceType: "test-instance",
+						Workers:      1,
+					},
 				}
 				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}
@@ -68,6 +81,12 @@ var _ = Describe("TrainingUsage Controller", func() {
 
 			By("Cleanup the specific resource instance TrainingUsage")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
+
+			trainJob := &unstructured.Unstructured{}
+			trainJob.SetGroupVersionKind(TrainJobGVK)
+			trainJob.SetName(trainJobName)
+			trainJob.SetNamespace(resourceNamespace)
+			Expect(k8sClient.Delete(ctx, trainJob)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")

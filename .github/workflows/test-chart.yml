@@ -50,6 +50,9 @@ jobs:
         run: |
           helm lint ./dist/chart
 
+      - name: Install TrainJob CRD fixture (stands in for Kubeflow Trainer)
+        run: kubectl apply -f test/fixtures/trainjob-crd.yaml
+
 # TODO: Uncomment if cert-manager is enabled
 #      - name: Install cert-manager via Helm (wait for readiness)
 #        run: |

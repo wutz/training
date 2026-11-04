@@ -34,11 +34,16 @@ var (
 	GroupVersion = SchemeGroupVersion
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme.
-	SchemeBuilder = runtime.NewSchemeBuilder(func(scheme *runtime.Scheme) error {
-		metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
-		return nil
-	})
+	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
 
 	// AddToScheme adds the types in this group-version to the given scheme.
 	AddToScheme = SchemeBuilder.AddToScheme
 )
+
+// addKnownTypes registers the TrainingUsage kinds with the scheme.
+// Without this, the manager and envtest fail with "no kind is registered".
+func addKnownTypes(scheme *runtime.Scheme) error {
+	scheme.AddKnownTypes(SchemeGroupVersion, &TrainingUsage{}, &TrainingUsageList{})
+	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
+	return nil
+}
