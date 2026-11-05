@@ -22,8 +22,8 @@ const (
 	LabelJobSetName = "jobset.sigs.k8s.io/jobset-name"
 	LabelCompletion = "batch.kubernetes.io/job-completion-index"
 
-	ConditionComplete  = "Complete"
-	ConditionFailed    = "Failed"
+	ConditionComplete = "Complete"
+	ConditionFailed   = "Failed"
 )
 
 // TrainJob is a training run.

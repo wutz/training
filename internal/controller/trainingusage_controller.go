@@ -276,7 +276,9 @@ func (r *TrainingUsageReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 func parseInt32(s string) int32 {
 	var n int32
-	fmt.Sscanf(s, "%d", &n)
+	if _, err := fmt.Sscanf(s, "%d", &n); err != nil {
+		return 0
+	}
 	return n
 }
 
@@ -293,7 +295,7 @@ func isFinished(u *unstructured.Unstructured) (bool, error) {
 		return false, err
 	}
 	for _, c := range conditions {
-		cond, ok := c.(map[string]interface{})
+		cond, ok := c.(map[string]any)
 		if !ok {
 			continue
 		}
@@ -312,7 +314,7 @@ func isFailed(u *unstructured.Unstructured) (bool, error) {
 		return false, err
 	}
 	for _, c := range conditions {
-		cond, ok := c.(map[string]interface{})
+		cond, ok := c.(map[string]any)
 		if !ok {
 			continue
 		}

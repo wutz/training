@@ -68,6 +68,13 @@ var _ = Describe("Manager", Ordered, func() {
 		_, err = utils.Run(cmd)
 		Expect(err).NotTo(HaveOccurred(), "Failed to install CRDs")
 
+		By("installing the TrainJob CRD fixture (stands in for Kubeflow Trainer)")
+		projectDir, err := utils.GetProjectDir()
+		Expect(err).NotTo(HaveOccurred())
+		cmd = exec.Command("kubectl", "apply", "-f", filepath.Join(projectDir, "test", "fixtures", "trainjob-crd.yaml"))
+		_, err = utils.Run(cmd)
+		Expect(err).NotTo(HaveOccurred(), "Failed to install TrainJob CRD fixture")
+
 		By("deploying the controller-manager")
 		cmd = exec.Command("make", "deploy", fmt.Sprintf("IMG=%s", managerImage))
 		_, err = utils.Run(cmd)

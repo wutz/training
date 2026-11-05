@@ -66,7 +66,8 @@ var _ = BeforeSuite(func() {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
+		// The TrainJob CRD is an external dependency (Kubeflow Trainer); the fixture stands in for it.
+		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases"), filepath.Join("..", "..", "test", "fixtures")},
 		ErrorIfCRDPathMissing: true,
 	}
 
